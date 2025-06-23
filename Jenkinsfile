@@ -4,7 +4,7 @@ pipeline {
   environment {
     BACKEND_IMAGE = "shiner2/backend-api"
     FRONTEND_IMAGE = "shiner2/frontend"
-    IMAGE_TAG = "${GIT_TAG_NAME}"
+    IMAGE_TAG = "${GIT_TAG_NAME ?: 'latest'}"
   }
 
   stages {
@@ -18,7 +18,9 @@ pipeline {
       steps {
         dir('backend-api') {
           script {
-            docker.build("${BACKEND_IMAGE}:${IMAGE_TAG}").push()
+            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+              docker.build("${BACKEND_IMAGE}:${IMAGE_TAG}").push()
+            }
           }
         }
       }
@@ -28,15 +30,17 @@ pipeline {
       steps {
         dir('frontend') {
           script {
-            docker.build("${FRONTEND_IMAGE}:${IMAGE_TAG}").push()
+            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+              docker.build("${FRONTEND_IMAGE}:${IMAGE_TAG}").push()
+            }
           }
         }
       }
     }
 
-    stage('Update Helm Config (optional)') {
+    stage('Update Helm Config') {
       steps {
-        echo "Update image tag trong config repo (bạn có thể làm thủ công nếu chưa có config repo riêng)"
+        echo "Cập nhật Helm values.yaml (nếu cần)"
       }
     }
   }
