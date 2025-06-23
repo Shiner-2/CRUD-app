@@ -1,23 +1,14 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: my-app                 # tên app trong ArgoCD UI
-  namespace: argocd            # namespace của ArgoCD (thường là argocd)
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/Shiner-2/CRUD-app.git
-    targetRevision: master
-    path: .                    # vì Chart.yaml nằm ở root
-    helm:
-      valueFiles:
-        - values.yaml          # dùng đúng values.yaml để chứa tag mới
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default         # nơi bạn muốn deploy app
-  syncPolicy:
-    automated:
-      prune: true              # xóa các resource không còn trong chart
-      selfHeal: true           # tự sửa nếu có thay đổi ngoài git
-    syncOptions:
-      - CreateNamespace=true   # tạo namespace nếu chưa có
+apiVersion: v2
+name: my-app
+description: A simple microservice app with frontend and backend
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: backend-api
+    version: 0.1.0
+    repository: "file://charts/backend-api"
+  - name: frontend
+    version: 0.1.0
+    repository: "file://charts/frontend"
