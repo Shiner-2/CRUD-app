@@ -1,45 +1,8 @@
-# Application cho backend-api
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: backend-api
-  namespace: argocd
 spec:
-  project: default
   source:
     repoURL: 'https://github.com/Shiner-2/CRUD-app.git'
     targetRevision: HEAD
-    path: charts/backend-api    # Đường dẫn chính xác đến chart backend-api
+    path: my-app      # thư mục chứa umbrella chart
     helm:
       valueFiles:
         - values.yaml
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
----
-# Application cho frontend
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: frontend
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/Shiner-2/CRUD-app.git'
-    targetRevision: HEAD
-    path: charts/frontend       # Đường dẫn chính xác đến chart frontend
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true

@@ -1,4 +1,5 @@
 backend-api:
+  replicaCount: 2
   image:
     repository: shiner2/backend-api
     tag: latest
@@ -8,6 +9,7 @@ backend-api:
     nodePort: 30500
 
 frontend:
+  replicaCount: 2
   image:
     repository: shiner2/frontend
     tag: latest
