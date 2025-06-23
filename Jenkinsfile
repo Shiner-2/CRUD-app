@@ -1,46 +1,74 @@
 pipeline {
-  agent any
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-config
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: docker-config
+    secret:
+      secretName: regcred
+"""
+    }
+  }
 
   environment {
-    BACKEND_IMAGE = "shiner2/backend-api"
-    FRONTEND_IMAGE = "shiner2/frontend"
-    IMAGE_TAG = "${GIT_TAG_NAME ?: 'latest'}"
+    IMAGE_TAG = "v1.0.0" // hoặc auto: `sh(script: 'git describe --tags', returnStdout: true).trim()`
+    BACKEND_IMAGE = "docker.io/shiner2/backend-api"
+    FRONTEND_IMAGE = "docker.io/shiner2/frontend"
   }
 
   stages {
-    stage('Checkout') {
+    stage('Build Backend with Kaniko') {
       steps {
-        checkout scm
-      }
-    }
-
-    stage('Build and Push Backend') {
-      steps {
-        dir('backend-api') {
-          script {
-            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-              docker.build("${BACKEND_IMAGE}:${IMAGE_TAG}").push()
-            }
-          }
+        container('kaniko') {
+          sh '''
+            /kaniko/executor \
+              --dockerfile=backend-api/Dockerfile \
+              --context=${WORKSPACE} \
+              --destination=${BACKEND_IMAGE}:${IMAGE_TAG}
+          '''
         }
       }
     }
 
-    stage('Build and Push Frontend') {
+    stage('Build Frontend with Kaniko') {
       steps {
-        dir('frontend') {
-          script {
-            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-              docker.build("${FRONTEND_IMAGE}:${IMAGE_TAG}").push()
-            }
-          }
+        container('kaniko') {
+          sh '''
+            /kaniko/executor \
+              --dockerfile=frontend/Dockerfile \
+              --context=${WORKSPACE} \
+              --destination=${FRONTEND_IMAGE}:${IMAGE_TAG}
+          '''
         }
       }
     }
 
-    stage('Update Helm Config') {
+    stage('Update Image Tag in Helm values.yaml') {
       steps {
-        echo "Cập nhật Helm values.yaml (nếu cần)"
+        sh """
+        sed -i 's|tag:.*|tag: "${IMAGE_TAG}"|' charts/backend-api/values.yaml
+        sed -i 's|tag:.*|tag: "${IMAGE_TAG}"|' charts/frontend/values.yaml
+        git config user.name "jenkins"
+        git config user.email "jenkins@example.com"
+        git add charts/*/values.yaml
+        git commit -m "Update image tag to ${IMAGE_TAG}"
+        git push origin HEAD:master
+        """
       }
     }
   }
