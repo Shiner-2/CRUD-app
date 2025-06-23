@@ -1,8 +1,10 @@
+import logging
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
 CORS(app)
+logging.basicConfig(level=logging.INFO)
 tasks = []
 next_id = 1
 metrics = PrometheusMetrics(app, path="/metrics")
@@ -37,5 +39,10 @@ def delete_task(task_id):
     tasks = [t for t in tasks if t["id"] != task_id]
     return jsonify({"result": "ok"})
 
+@app.after_request
+def after_request(response):
+    log = f"{request.method} {request.path} {response.status_code}"
+    app.logger.info(log)
+    return response
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

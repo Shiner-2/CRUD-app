@@ -2,7 +2,7 @@ backend-api:
   replicaCount: 4
   image:
     repository: shiner2/backend-api
-    tag: v1.0.4
+    tag: v1.0.5
   service:
     type: NodePort
     port: 5000
