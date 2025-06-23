@@ -1,7 +1,8 @@
 image:
   repository: shiner2/frontend
-  tag: latest
-
+  tag: v1.0.3
+  pullPolicy: Always
+  
 service:
   type: NodePort
   port: 80

@@ -1,18 +1,18 @@
 backend-api:
-  replicaCount: 2
+  replicaCount: 4
   image:
     repository: shiner2/backend-api
-    tag: v1.0.1
+    tag: v1.0.3
   service:
     type: NodePort
     port: 5000
     nodePort: 30500
 
 frontend:
-  replicaCount: 2
+  replicaCount: 4
   image:
     repository: shiner2/frontend
-    tag: v1.0.1
+    tag: v1.0.3
   service:
     type: NodePort
     port: 80
