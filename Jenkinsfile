@@ -70,7 +70,7 @@ pipeline {
                 sh 'git add values.yaml'
                 sh "git commit -m 'Update image tags to ${GIT_TAG}' || echo 'No changes to commit'"
                 withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                    sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shiner-2/CRUD-app.git HEAD:main"
+                    sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shiner-2/CRUD-app.git HEAD:refs/heads/main"
                 }
             }
         }
