@@ -39,13 +39,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            // Bọc trong script để không lỗi
-            script {
-                sh 'docker logout'
-            }
-        }
-    }
 }
