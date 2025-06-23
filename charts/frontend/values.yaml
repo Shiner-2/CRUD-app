@@ -1,0 +1,8 @@
+image:
+  repository: shiner2/frontend
+  tag: latest
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30081

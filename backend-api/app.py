@@ -1,0 +1,37 @@
+from flask_cors import CORS
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+CORS(app)
+tasks = []
+next_id = 1
+
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    return jsonify(tasks)
+
+@app.route('/tasks', methods=['POST'])
+def add_task():
+    global next_id
+    data = request.json
+    task = {"id": next_id, "title": data.get("title", "")}
+    tasks.append(task)
+    next_id += 1
+    return jsonify(task), 201
+
+@app.route('/tasks/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    data = request.json
+    for task in tasks:
+        if task["id"] == task_id:
+            task["title"] = data.get("title", task["title"])
+            return jsonify(task)
+    return jsonify({"error": "Not found"}), 404
+
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    global tasks
+    tasks = [t for t in tasks if t["id"] != task_id]
+    return jsonify({"result": "ok"})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
