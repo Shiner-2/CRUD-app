@@ -5,7 +5,7 @@ app = Flask(__name__)
 CORS(app)
 tasks = []
 next_id = 1
-metrics = PrometheusMetrics(app)
+metrics = PrometheusMetrics(app, path="/metrics")
 @app.route('/api')
 def api():
     return {"message": "Hello API"}

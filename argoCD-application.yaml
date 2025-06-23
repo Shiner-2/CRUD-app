@@ -13,14 +13,15 @@ spec:
     helm:
       valueFiles:
         - values.yaml
+      releaseName: my-app   # ✅ Thêm dòng này để dùng 1 release duy nhất
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: microservice   # ✅ Đã sửa thành namespace mong muốn
+    namespace: microservice
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true   # ✅ Tự tạo namespace nếu chưa tồn tại
+      - CreateNamespace=true

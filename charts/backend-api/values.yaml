@@ -1,6 +1,6 @@
 image:
   repository: shiner2/backend-api
-  tag: latest
+  tag: v1.0.4
 
 service:
   type: NodePort
