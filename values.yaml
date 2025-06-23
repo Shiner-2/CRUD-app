@@ -1,5 +1,5 @@
 backend-api:
-  replicaCount: 2
+  replicaCount: 4
   image:
     repository: shiner2/backend-api
     tag: v1.0.3
@@ -9,7 +9,7 @@ backend-api:
     nodePort: 30500
 
 frontend:
-  replicaCount: 2
+  replicaCount: 4
   image:
     repository: shiner2/frontend
     tag: v1.0.3
