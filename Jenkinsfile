@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         FRONTEND_IMAGE = 'shiner2/frontend'
         BACKEND_IMAGE = 'shiner2/backend'
     }
