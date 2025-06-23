@@ -49,6 +49,36 @@ pipeline {
             }
         }
 
+        stage('Get Git Tag and Increment') {
+            steps {
+                script {
+                    // Lấy tag hiện tại, ví dụ "v1.0.0"
+                    def currentTag = sh(returnStdout: true, script: "git describe --tags --abbrev=0 || echo 'v0.0.0'").trim()
+                    echo "Current Tag: ${currentTag}"
+        
+                    // Tách phần số, giả sử tag format chuẩn "vX.Y.Z"
+                    def pattern = /^v(\d+)\.(\d+)\.(\d+)$/
+                    def matcher = currentTag =~ pattern
+                    if (matcher) {
+                        def major = matcher[0][1].toInteger()
+                        def minor = matcher[0][2].toInteger()
+                        def patch = matcher[0][3].toInteger()
+        
+                        // Tăng patch lên 1
+                        patch = patch + 1
+        
+                        env.GIT_TAG = "v${major}.${minor}.${patch}"
+                    } else {
+                        // Nếu tag không đúng format, đặt version mặc định
+                        env.GIT_TAG = "v0.0.1"
+                    }
+                    echo "New Tag: ${env.GIT_TAG}"
+                }
+            }
+        }
+
+        
+
         stage('Build and Push') {
             steps {
                 sh "docker build -t ${FRONTEND_IMAGE}:${GIT_TAG} frontend"
