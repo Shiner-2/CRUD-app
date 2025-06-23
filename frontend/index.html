@@ -20,7 +20,7 @@
   </div>
 
   <script>
-    const API = "http://192.168.152.132:5000/tasks"; 
+    const API = "http://192.168.152.132:30500/tasks";
 
     async function load() {
       const res = await fetch(API);
@@ -30,7 +30,7 @@
       tasks.forEach(t => {
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.innerText = t.task;
+        li.innerText = t.title;  // sửa ở đây
         const delBtn = document.createElement("button");
         delBtn.className = "btn btn-sm btn-danger";
         delBtn.innerText = "Delete";
@@ -47,7 +47,7 @@
       await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task })
+        body: JSON.stringify({ title: task })  // sửa ở đây
       });
       input.value = "";
       load();
