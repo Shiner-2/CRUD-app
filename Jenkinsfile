@@ -70,10 +70,13 @@ pipeline {
                     git config user.email "jenkins@example.com"
                     git add values.yaml
                     git commit -m "Update image tags to ${GIT_TAG}" || echo "No changes to commit"
-                    git push origin master
                 """
+                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shiner-2/CRUD-app.git HEAD:refs/heads/master"
+                }
             }
         }
+
 
         stage('Save current commit') {
             steps {
