@@ -1,10 +1,14 @@
 from flask_cors import CORS
 from flask import Flask, request, jsonify
+from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
 CORS(app)
 tasks = []
 next_id = 1
-
+metrics = PrometheusMetrics(app)
+@app.route('/api')
+def api():
+    return {"message": "Hello API"}
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     return jsonify(tasks)
