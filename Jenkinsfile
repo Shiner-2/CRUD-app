@@ -11,7 +11,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: 'refs/heads/master']], 
+                    userRemoteConfigs: [[url: 'https://github.com/Shiner-2/CRUD-app.git', credentialsId: 'github']]
+                ])
             }
         }
 
@@ -61,17 +64,14 @@ pipeline {
         stage('Update values.yaml & Push') {
             steps {
                 sh """
-                sed -i 's|\\(backend-api:\\s*\\n\\s*replicaCount:.*\\n\\s*image:\\s*\\n\\s*repository: shiner2/backend-api\\n\\s*tag: \\).*|\\1${GIT_TAG}|' values.yaml
-                sed -i 's|\\(frontend:\\s*\\n\\s*replicaCount:.*\\n\\s*image:\\s*\\n\\s*repository: shiner2/frontend\\n\\s*tag: \\).*|\\1${GIT_TAG}|' values.yaml
+                    sed -i '/backend-api:/,/- tag:/ s/tag: .*/tag: ${GIT_TAG}/' values.yaml
+                    sed -i '/frontend:/,/- tag:/ s/tag: .*/tag: ${GIT_TAG}/' values.yaml
+                    git config user.name "jenkins"
+                    git config user.email "jenkins@example.com"
+                    git add values.yaml
+                    git commit -m "Update image tags to ${GIT_TAG}" || echo "No changes to commit"
+                    git push origin master
                 """
-
-                sh 'git config user.name "jenkins"'
-                sh 'git config user.email "jenkins@example.com"'
-                sh 'git add values.yaml'
-                sh "git commit -m 'Update image tags to ${GIT_TAG}' || echo 'No changes to commit'"
-                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                    sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shiner-2/CRUD-app.git HEAD:refs/heads/main"
-                }
             }
         }
 
