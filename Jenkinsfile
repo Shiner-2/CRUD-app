@@ -40,8 +40,4 @@ pipeline {
       }
     }
   }
-
-  triggers {
-    // Nếu dùng plugin hoặc webhook để phát hiện tag push
-  }
 }
