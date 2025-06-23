@@ -5,14 +5,22 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   source:
-    repoURL: 'https://github.com/Shiner-2/CRUD-app'
-    targetRevision: HEAD
-    path: "."
+    repoURL: https://github.com/Shiner-2/CRUD-app.git
+    targetRevision: master
+    path: .
+    helm:
+      valueFiles:
+        - values.yaml
+
   destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: default
+    server: https://kubernetes.default.svc
+    namespace: microservice   # ✅ Đã sửa thành namespace mong muốn
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true   # ✅ Tự tạo namespace nếu chưa tồn tại
